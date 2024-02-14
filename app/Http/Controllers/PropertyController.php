@@ -1,15 +1,21 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\SearchPropertiesRequest;
 use App\Models\Property;
 
 class PropertyController extends Controller
 {
-    public function index()
+    public function index(SearchPropertiesRequest $request)
     {
-        $properties = Property::paginate(5);
+        $query = Property::query();
+
+        if ($request->has('price'))
+        {
+            $query = $query->where('price', '<=', $request->input('price'));
+        }
         return view('app.property', [
-            'properties' => $properties,
+            'properties' => $query->paginate(5),
         ]);
     }
 
